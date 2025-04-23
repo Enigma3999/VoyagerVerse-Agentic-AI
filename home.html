@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dubai Adaptive Travel Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #2455a2;
+      overflow: hidden;
+    }
+    .wrapper {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+      align-items: stretch;
+    }
+    .intro {
+      flex: 1;
+      background-color: #2455a2;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 2rem;
+    }
+    .intro img {
+      max-width: 100%;
+      border-radius: 12px;
+    }
+    .intro h1 {
+      margin: 1rem 0 0.5rem;
+      font-size: 2rem;
+    }
+    .intro p {
+      font-size: 1.1rem;
+    }
+    .container {
+      flex: 1.2;
+      padding: 6rem;
+      background-color: #2455a2;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      box-sizing: border-box;
+      color: white;
+    }
+    select,  button {
+      width: 100%;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+    }
+    select {
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    textarea {
+        width: 95%;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      height: 100px;
+      padding: 1rem;
+      border-radius: 10px;
+      border: 2px solid #ccc;
+      resize: none;
+    }
+    button {
+      padding: 0.6rem 1.4rem;
+      background-color: #4378bc;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .chat {
+      background-color: #f1faff;
+      padding: 1rem;
+      margin-top: 2rem;
+      border-radius: 10px;
+      border: 1px solid #cceeff;
+      color: black;
+      height: 200px;
+      overflow-y: auto;
+      resize: vertical;
+    }
+    .message {
+      margin-bottom: 1rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      background: #e0f7fa;
+    }
+    .message.bot {
+      background: #fdfcdc;
+    }
+    @media (max-width: 900px) {
+      .wrapper {
+        flex-direction: column;
+        height: auto;
+      }
+      .container {
+        padding: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="intro">
+      <img src="57547.jpg" alt="Dubai travelers">
+      <h1 id="titleText">Smart Travel in Dubai</h1>
+      <p id="introText">Discover personalized, real-time travel plans tailored to your lifestyle, preferences, and local updates.</p>
+    </div>
+    <div class="container">
+      <h2 id="mainHeading">Dubai Adaptive Travel Assistant</h2>
+      <p id="subHeading">Plan your Dubai trip with real-time personalized recommendations</p>
+
+      <select id="langSelect">
+        <option value="en-US">English</option>
+        <option value="ar-SA">Arabic</option>
+        <option value="fr-FR">French</option>
+        <option value="es-ES">Spanish</option>
+        <option value="hi-IN">Hindi</option>
+      </select>
+
+      <textarea id="textInput" placeholder="Type your travel preferences..."></textarea>
+      <button onclick="handleTextSubmit()">Send</button>
+      <button onclick="startVoiceInput()">Speak</button>
+
+      <div class="chat" id="chatBox"></div>
+    </div>
+  </div>
+  <script>
+    const chatBox = document.getElementById("chatBox");
+    const uiText = {
+      "en-US": {
+        title: "Smart Travel in Dubai",
+        intro: "Discover personalized, real-time travel plans tailored to your lifestyle, preferences, and local updates.",
+        mainHeading: "Dubai Adaptive Travel Assistant",
+        subHeading: "Plan your Dubai trip with real-time personalized recommendations",
+        inputPlaceholder: "Type your travel preferences...",
+        send: "Send",
+        speak: "Speak"
+      },
+      "ar-SA": {
+        title: "السفر الذكي إلى دبي",
+        intro: "اكتشف خطط سفر مخصصة في الوقت الحقيقي تناسب نمط حياتك وتفضيلاتك وتحديثات دبي المحلية.",
+        mainHeading: "مساعد السفر التكيفي لدبي",
+        subHeading: "خطط لرحلتك في دبي بتوصيات مخصصة في الوقت الفعلي",
+        inputPlaceholder: "اكتب تفضيلاتك للسفر...",
+        send: "إرسال",
+        speak: "تحدث"
+      },
+      "fr-FR": {
+        title: "Voyage Intelligent à Dubaï",
+        intro: "Découvrez des plans de voyage personnalisés et en temps réel adaptés à votre style de vie.",
+        mainHeading: "Assistant de Voyage Adaptatif Dubaï",
+        subHeading: "Planifiez votre voyage avec des recommandations personnalisées en temps réel",
+        inputPlaceholder: "Tapez vos préférences de voyage...",
+        send: "Envoyer",
+        speak: "Parler"
+      },
+      "es-ES": {
+        title: "Viaje Inteligente a Dubái",
+        intro: "Descubre planes de viaje personalizados y en tiempo real adaptados a ti.",
+        mainHeading: "Asistente de Viaje Adaptativo de Dubái",
+        subHeading: "Planifica tu viaje con recomendaciones personalizadas en tiempo real",
+        inputPlaceholder: "Escribe tus preferencias de viaje...",
+        send: "Enviar",
+        speak: "Hablar"
+      },
+      "hi-IN": {
+        title: "दुबई की स्मार्ट यात्रा",
+        intro: "अपने जीवनशैली और पसंद के अनुसार अनुकूलित यात्रा योजनाएं तुरंत प्राप्त करें।",
+        mainHeading: "दुबई अनुकूलन योग्य यात्रा सहायक",
+        subHeading: "तुरंत अनुकूल सुझावों के साथ अपनी यात्रा की योजना बनाएं",
+        inputPlaceholder: "अपनी यात्रा की प्राथमिकताएं टाइप करें...",
+        send: "भेजें",
+        speak: "बोलें"
+      }
+    };
+
+    function localizeUI(lang) {
+      const t = uiText[lang] || uiText["en-US"];
+      document.getElementById("titleText").textContent = t.title;
+      document.getElementById("introText").textContent = t.intro;
+      document.getElementById("mainHeading").textContent = t.mainHeading;
+      document.getElementById("subHeading").textContent = t.subHeading;
+      document.getElementById("textInput").placeholder = t.inputPlaceholder;
+      document.querySelector("button[onclick='handleTextSubmit()']").textContent = t.send;
+      document.querySelector("button[onclick='startVoiceInput()']").textContent = t.speak;
+    }
+
+    function autoDetectLanguage() {
+      const browserLang = navigator.language || "en-US";
+      const supported = Object.keys(uiText);
+      const matched = supported.includes(browserLang) ? browserLang : "en-US";
+      document.getElementById("langSelect").value = matched;
+      localizeUI(matched);
+    }
+
+    document.getElementById("langSelect").addEventListener("change", e => localizeUI(e.target.value));
+    window.onload = autoDetectLanguage;
+
+    function appendMessage(text, fromUser = true) {
+      const msg = document.createElement("div");
+      msg.className = "message" + (fromUser ? " user" : " bot");
+      msg.textContent = text;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function handleTextSubmit() {
+      const input = document.getElementById("textInput");
+      const text = input.value.trim();
+      if (text) {
+        appendMessage("You: " + text, true);
+        fetch("http://localhost:8000/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: text,
+            language: document.getElementById("langSelect").value
+          })
+        })
+        .then(res => res.json())
+        .then(data => appendMessage("AI: " + data.reply, false));
+        input.value = "";
+      }
+    }
+
+    function startVoiceInput() {
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = document.getElementById("langSelect").value;
+      recognition.start();
+      recognition.onresult = function(event) {
+        const text = event.results[0][0].transcript;
+        document.getElementById("textInput").value = text;
+        handleTextSubmit();
+      };
+    }
+  </script>
+</body>
+</html>

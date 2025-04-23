@@ -1,0 +1,14 @@
+fastapi
+uvicorn[standard]
+python-multipart
+aiofiles
+requests
+jinja2
+pydantic
+openai
+starlette
+
+deep-translator
+
+
+
