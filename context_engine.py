@@ -4,6 +4,9 @@ import logging
 import random
 from typing import Dict, List, Any, Optional
 
+# Import the emotional intelligence module
+from emotional_intelligence import emotional_intelligence
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("context_engine")
 
@@ -18,6 +21,9 @@ class ContextEngine:
     
     def __init__(self):
         self.current_context = {}
+        self.context_history = []
+        self.last_update = datetime.datetime.now()
+        self.emotional_intelligence = emotional_intelligence  # Use the singleton instance
         self.weather_providers = ["OpenWeatherMap", "AccuWeather", "WeatherAPI"]
         self.location_providers = ["Google Maps", "Here Maps", "TomTom"]
         self.last_update = datetime.datetime.now()
@@ -138,18 +144,45 @@ class ContextEngine:
             "last_updated": datetime.datetime.now().isoformat()
         }
     
-    def update_traveler_state(self, new_state: Dict[str, Any] = None) -> Dict[str, Any]:
-        """Update the traveler's current state."""
-        if new_state:
-            # Update only provided values
-            traveler_state = self.current_context.get("traveler_state", {})
-            traveler_state.update(new_state)
-            self.current_context["traveler_state"] = traveler_state
-        else:
-            # Simulate natural changes in traveler state
-            self._simulate_traveler_state_changes()
+    def update_traveler_state(self, traveler_state: Dict[str, Any], biometric_data: Optional[Dict[str, Any]] = None,
+                             speech_data: Optional[Dict[str, Any]] = None, facial_data: Optional[Dict[str, Any]] = None,
+                             behavioral_data: Optional[Dict[str, Any]] = None) -> None:
+        """Update the traveler's current state including emotional and physiological data.
         
-        return self.current_context["traveler_state"]
+        Args:
+            traveler_state: Dictionary containing traveler state information
+            biometric_data: Optional biometric readings from wearables
+            speech_data: Optional speech pattern analysis
+            facial_data: Optional facial expression analysis
+            behavioral_data: Optional behavioral pattern analysis
+        """
+        if 'traveler_state' not in self.current_context:
+            self.current_context['traveler_state'] = {}
+            
+        # Update basic traveler state
+        self.current_context['traveler_state'].update(traveler_state)
+        self.current_context['traveler_state']['last_updated'] = datetime.datetime.now().isoformat()
+        
+        # Process emotional and physiological data if available
+        if any([biometric_data, speech_data, facial_data, behavioral_data]):
+            emotional_state = self.emotional_intelligence.update_emotional_state(
+                biometric_data=biometric_data,
+                speech_data=speech_data,
+                facial_data=facial_data,
+                behavioral_data=behavioral_data
+            )
+            
+            # Add emotional state to traveler state
+            self.current_context['traveler_state']['emotional_state'] = emotional_state
+            
+            # Get adaptation recommendations
+            adaptation_recommendations = self.emotional_intelligence.get_adaptation_recommendations()
+            self.current_context['traveler_state']['adaptation_recommendations'] = adaptation_recommendations
+            
+            logger.info(f"Updated traveler emotional state: {emotional_state}")
+            logger.info(f"Adaptation recommendations: {adaptation_recommendations}")
+        
+        logger.info(f"Updated traveler state: {traveler_state}")
     
     def _simulate_traveler_state_changes(self):
         """Simulate natural changes in traveler state over time."""
@@ -232,15 +265,7 @@ class ContextEngine:
             return "night"
     
     def get_current_context(self) -> Dict[str, Any]:
-        """Get the complete current context."""
-        # Update all dynamic context elements
-        self.update_weather()
-        self.update_time_context()
-        self.update_traveler_state()
-        
-        # Add timestamp
-        self.current_context["timestamp"] = datetime.datetime.now().isoformat()
-        
+        """Get the current context."""
         return self.current_context
     
     def get_activity_compatibility(self, activity: Dict[str, Any]) -> Dict[str, Any]:

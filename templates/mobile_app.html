@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoyagerVerse - Agentic AI Travel Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #00b894;
+            --primary-dark: #00a884;
+            --background-color: #f5f6fa;
+            --card-color: #ffffff;
+            --text-color: #2d3436;
+            --text-secondary: #636e72;
+            --border-color: #dfe6e9;
+            --accent-color: #0984e3;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .app-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .app-title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        .app-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .menu-icon {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .app-logo {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .mic-icon {
+            font-size: 24px;
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #f1f2f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .tab-navigation {
+            display: flex;
+            background-color: white;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-secondary);
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        .content-area {
+            padding: 16px;
+        }
+        
+        .date-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .today-label {
+            display: flex;
+            align-items: center;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .calendar-icon {
+            color: var(--primary-color);
+            margin-right: 8px;
+            font-size: 24px;
+        }
+        
+        .date {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .itinerary-item {
+            background-color: var(--card-color);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .item-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .item-location {
+            display: flex;
+            align-items: center;
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        
+        .location-icon {
+            margin-right: 4px;
+            font-size: 16px;
+        }
+        
+        .item-time {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        .preferences-section {
+            margin-top: 24px;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+        
+        .person-icon {
+            color: var(--primary-color);
+            margin-right: 8px;
+            font-size: 20px;
+        }
+        
+        .preference-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .preference-tag {
+            background-color: #e8f5f0;
+            color: var(--primary-color);
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .notification {
+            position: fixed;
+            bottom: 16px;
+            left: 16px;
+            right: 16px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            transform: translateY(150%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateY(0);
+        }
+        
+        .notification-icon {
+            font-size: 24px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        .notification-content {
+            flex: 1;
+        }
+        
+        .notification-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .notification-message {
+            font-size: 14px;
+        }
+        
+        .notification-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 8px;
+        }
+        
+        .notification-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            margin-left: 8px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        /* AI Process Tab */
+        .process-container {
+            display: none;
+        }
+        
+        .process-container.active {
+            display: block;
+        }
+        
+        .process-step {
+            background-color: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: relative;
+        }
+        
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .step-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        .step-title {
+            font-weight: 500;
+            font-size: 16px;
+        }
+        
+        .step-content {
+            padding-left: 44px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .step-detail {
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            padding: 8px;
+            margin-top: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+        
+        /* Insights Tab */
+        .insights-container {
+            display: none;
+        }
+        
+        .insights-container.active {
+            display: block;
+        }
+        
+        .insight-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .insight-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .insight-icon {
+            color: var(--primary-color);
+            font-size: 20px;
+            margin-right: 8px;
+        }
+        
+        .insight-title {
+            font-weight: 500;
+            font-size: 16px;
+        }
+        
+        .insight-content {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .weather-insight {
+            display: flex;
+            align-items: center;
+            margin-top: 8px;
+        }
+        
+        .weather-temp {
+            font-size: 24px;
+            font-weight: 500;
+            margin-right: 12px;
+        }
+        
+        .weather-details {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .adaptation-item {
+            display: flex;
+            align-items: center;
+            margin-top: 8px;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        
+        .adaptation-icon {
+            color: var(--accent-color);
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <div class="app-title">Voyager Verse - Agentic AI Travel Assistant</div>
+        <div class="app-nav">
+            <div class="menu-icon">☰</div>
+            <div class="app-logo">Voyager Verse</div>
+            <div class="user-avatar">
+                <!-- Placeholder for user avatar -->
+                <div style="background-color: #0984e3; width: 100%; height: 100%;"></div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="tab-navigation">
+        <div class="tab active" data-tab="itinerary">Itinerary</div>
+        <div class="tab" data-tab="ai-process">AI Process</div>
+        <div class="tab" data-tab="insights">Insights</div>
+    </div>
+    
+    <div class="content-area">
+        <!-- Itinerary Tab -->
+        <div class="itinerary-container active" id="itinerary-tab">
+            <div class="date-header">
+                <div class="today-label">
+                    <span class="calendar-icon">📅</span>
+                    Today's Itinerary
+                </div>
+                <div class="date">May 15, 2023</div>
+            </div>
+            
+            <div class="itinerary-item" style="position: relative;">
+                <div class="item-title">Hotel Breakfast</div>
+                <div class="item-location">
+                    <span class="location-icon">📍</span>
+                    Hotel Restaurant
+                </div>
+                <div class="item-time">09:00 AM</div>
+            </div>
+            
+            <div class="itinerary-item" style="position: relative;">
+                <div class="item-title">Desert Safari</div>
+                <div class="item-location">
+                    <span class="location-icon">📍</span>
+                    Dubai Desert
+                </div>
+                <div class="item-time">11:00 AM</div>
+            </div>
+            
+            <div class="itinerary-item" style="position: relative;">
+                <div class="item-title">Lunch at Al Hadeerah</div>
+                <div class="item-location">
+                    <span class="location-icon">📍</span>
+                    Desert Restaurant
+                </div>
+                <div class="item-time">02:00 PM</div>
+            </div>
+            
+            <div class="itinerary-item" style="position: relative;">
+                <div class="item-title">Camel Riding</div>
+                <div class="item-location">
+                    <span class="location-icon">📍</span>
+                    Dubai Desert
+                </div>
+                <div class="item-time">04:00 PM</div>
+            </div>
+            
+            <div class="itinerary-item" style="position: relative;">
+                <div class="item-title">Dinner Cruise</div>
+                <div class="item-location">
+                    <span class="location-icon">📍</span>
+                    Dubai Marina
+                </div>
+                <div class="item-time">07:00 PM</div>
+            </div>
+            
+            <div class="preferences-section">
+                <div class="section-title">
+                    <span class="person-icon">👤</span>
+                    Your Preferences
+                </div>
+                <div class="preference-tags">
+                    <div class="preference-tag">Cultural Experiences</div>
+                    <div class="preference-tag">Outdoor Activities</div>
+                    <div class="preference-tag">Fine Dining</div>
+                    <div class="preference-tag">Photography</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- AI Process Tab -->
+        <div class="process-container" id="ai-process-tab">
+            <div class="process-step">
+                <div class="step-header">
+                    <div class="step-icon">👁️</div>
+                    <div class="step-title">Perception</div>
+                </div>
+                <div class="step-content">
+                    <p>Monitoring real-time data including weather conditions, local events, and your personal state.</p>
+                    <div class="step-detail">
+                        Weather: 44°C, Extreme Heat
+                        Time: 10:30 AM
+                        Location: Dubai, UAE
+                    </div>
+                </div>
+            </div>
+            
+            <div class="process-step">
+                <div class="step-header">
+                    <div class="step-icon">🧠</div>
+                    <div class="step-title">Reasoning</div>
+                </div>
+                <div class="step-content">
+                    <p>Analyzing safety and comfort factors for your Desert Safari activity.</p>
+                    <div class="step-detail">
+                        Risk Assessment: High
+                        Reason: Temperature exceeds safe threshold for outdoor activities
+                        Recommendation: Reschedule or find indoor alternative
+                    </div>
+                </div>
+            </div>
+            
+            <div class="process-step">
+                <div class="step-header">
+                    <div class="step-icon">⚡</div>
+                    <div class="step-title">Action</div>
+                </div>
+                <div class="step-content">
+                    <p>Taking proactive steps to adjust your itinerary for safety and comfort.</p>
+                    <div class="step-detail">
+                        Canceled: Desert Safari (11:00 AM)
+                        Booked: Dubai Museum Visit (11:00 AM)
+                        Notification: Sent to your device
+                    </div>
+                </div>
+            </div>
+            
+            <div class="process-step">
+                <div class="step-header">
+                    <div class="step-icon">📊</div>
+                    <div class="step-title">Learning</div>
+                </div>
+                <div class="step-content">
+                    <p>Updating your preference model based on this interaction.</p>
+                    <div class="step-detail">
+                        Added: "Prefers indoor activities during extreme heat"
+                        Updated: Cultural venue preference ranking
+                        Noted: Safety prioritization level
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Insights Tab -->
+        <div class="insights-container" id="insights-tab">
+            <div class="insight-card">
+                <div class="insight-header">
+                    <div class="insight-icon">🌡️</div>
+                    <div class="insight-title">Weather Alert</div>
+                </div>
+                <div class="insight-content">
+                    <p>Extreme heat warning in effect for Dubai today.</p>
+                    <div class="weather-insight">
+                        <div class="weather-temp">44°C</div>
+                        <div class="weather-details">
+                            Feels like: 47°C<br>
+                            Humidity: 28%
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="insight-card">
+                <div class="insight-header">
+                    <div class="insight-icon">🔄</div>
+                    <div class="insight-title">Itinerary Adaptation</div>
+                </div>
+                <div class="insight-content">
+                    <p>Your itinerary was adapted due to extreme heat conditions.</p>
+                    <div class="adaptation-item">
+                        <span class="adaptation-icon">❌</span>
+                        Desert Safari (outdoor, high heat exposure)
+                    </div>
+                    <div class="adaptation-item">
+                        <span class="adaptation-icon">✅</span>
+                        Dubai Museum Visit (indoor, air-conditioned)
+                    </div>
+                </div>
+            </div>
+            
+            <div class="insight-card">
+                <div class="insight-header">
+                    <div class="insight-icon">💧</div>
+                    <div class="insight-title">Hydration Reminder</div>
+                </div>
+                <div class="insight-content">
+                    <p>Due to high temperatures, remember to stay hydrated throughout the day.</p>
+                    <p>Recommended: 4-6 liters of water today.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Weather Alert Notification -->
+    <div class="notification" id="weather-notification">
+        <div class="notification-icon">⚠️</div>
+        <div class="notification-content">
+            <div class="notification-title">Weather Alert: Extreme Heat</div>
+            <div class="notification-message">Your Desert Safari has been rescheduled due to unsafe temperatures. I've booked the Dubai Museum instead.</div>
+            <div class="notification-actions">
+                <button class="notification-btn" id="view-details-btn">View Details</button>
+                <button class="notification-btn" id="accept-btn">Accept</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Details Modal -->
+    <div id="details-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 2000; overflow: auto;">
+        <div style="background-color: white; margin: 10% auto; padding: 20px; border-radius: 8px; width: 90%; max-width: 500px; position: relative;">
+            <span id="close-modal" style="position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer;">&times;</span>
+            <h3 style="color: var(--primary-color); margin-bottom: 15px;">Weather Alert Details</h3>
+            <div style="margin-bottom: 15px;">
+                <h4>Current Conditions:</h4>
+                <p>Temperature: 44°C (Extreme Heat)</p>
+                <p>Humidity: 28%</p>
+                <p>UV Index: Very High (10)</p>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <h4>Health & Safety Concerns:</h4>
+                <ul style="padding-left: 20px;">
+                    <li>High risk of heat exhaustion and heat stroke</li>
+                    <li>Dehydration risk, especially for travelers not acclimatized</li>
+                    <li>Sunburn risk within 15 minutes of exposure</li>
+                </ul>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <h4>Adaptation Details:</h4>
+                <p><strong>Original Activity:</strong> Desert Safari (11:00 AM - 3:00 PM)</p>
+                <p><strong>New Activity:</strong> Dubai Museum Visit (11:00 AM - 1:30 PM)</p>
+                <p><strong>Reason:</strong> Indoor, air-conditioned environment to avoid heat exposure during peak hours</p>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <h4>Desert Safari Options:</h4>
+                <p>We can reschedule your Desert Safari for:</p>
+                <ul style="padding-left: 20px;">
+                    <li>Tomorrow morning (6:00 AM - 10:00 AM)</li>
+                    <li>This evening (5:00 PM - 9:00 PM)</li>
+                </ul>
+                <p>Would you like me to book one of these alternatives?</p>
+            </div>
+            <button style="background-color: var(--primary-color); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; float: right;">Reschedule Options</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab navigation
+            const tabs = document.querySelectorAll('.tab');
+            const containers = document.querySelectorAll('.itinerary-container, .process-container, .insights-container');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    // Hide all containers
+                    containers.forEach(c => c.classList.remove('active'));
+                    
+                    // Show the corresponding container
+                    const tabId = this.getAttribute('data-tab');
+                    if (tabId === 'itinerary') {
+                        document.getElementById('itinerary-tab').classList.add('active');
+                    } else if (tabId === 'ai-process') {
+                        document.getElementById('ai-process-tab').classList.add('active');
+                    } else if (tabId === 'insights') {
+                        document.getElementById('insights-tab').classList.add('active');
+                    }
+                });
+            });
+            
+            // Show notification after a delay
+            setTimeout(function() {
+                document.getElementById('weather-notification').classList.add('show');
+            }, 3000);
+            
+            // View Details button functionality
+            document.getElementById('view-details-btn').addEventListener('click', function() {
+                document.getElementById('details-modal').style.display = 'block';
+            });
+            
+            // Close modal when X is clicked
+            document.getElementById('close-modal').addEventListener('click', function() {
+                document.getElementById('details-modal').style.display = 'none';
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', function(event) {
+                if (event.target === document.getElementById('details-modal')) {
+                    document.getElementById('details-modal').style.display = 'none';
+                }
+            });
+            
+            // Hide notification when Accept button is clicked
+            document.getElementById('accept-btn').addEventListener('click', function() {
+                document.getElementById('weather-notification').classList.remove('show');
+            });
+        });
+    </script>
+</body>
+</html>

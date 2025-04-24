@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoyagerVerse - Agent Calling Demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #00b894;
+            --secondary-color: #0984e3;
+            --background-color: #f5f6fa;
+            --card-color: #ffffff;
+            --text-color: #2d3436;
+            --text-secondary: #636e72;
+            --border-color: #dfe6e9;
+            --agent-color: #6c5ce7;
+            --weather-color: #fdcb6e;
+            --health-color: #e17055;
+            --preference-color: #74b9ff;
+            --booking-color: #55efc4;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: var(--text-secondary);
+        }
+        
+        .user-query {
+            background-color: var(--card-color);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .user-query h2 {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .user-query p {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--text-color);
+            background-color: #f1f2f6;
+            padding: 15px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        
+        .agent-calling-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .agent-card {
+            background-color: var(--card-color);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--agent-color);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        .agent-card.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .agent-card.weather {
+            border-left-color: var(--weather-color);
+        }
+        
+        .agent-card.health {
+            border-left-color: var(--health-color);
+        }
+        
+        .agent-card.preference {
+            border-left-color: var(--preference-color);
+        }
+        
+        .agent-card.booking {
+            border-left-color: var(--booking-color);
+        }
+        
+        .agent-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .agent-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .agent-title h3 {
+            font-size: 1.2rem;
+        }
+        
+        .agent-badge {
+            background-color: var(--agent-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+        
+        .agent-badge.weather {
+            background-color: var(--weather-color);
+        }
+        
+        .agent-badge.health {
+            background-color: var(--health-color);
+        }
+        
+        .agent-badge.preference {
+            background-color: var(--preference-color);
+        }
+        
+        .agent-badge.booking {
+            background-color: var(--booking-color);
+        }
+        
+        .agent-timestamp {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+        
+        .code-block {
+            background-color: #2d3436;
+            color: #f5f6fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+        
+        .response-block {
+            background-color: #f1f9f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #27ae60;
+        }
+        
+        .decision-container {
+            background-color: var(--card-color);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        .decision-container.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .decision-container h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .decision-container p {
+            margin-bottom: 15px;
+        }
+        
+        .decision-options {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .decision-option {
+            flex: 1;
+            background-color: #f1f9f5;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #27ae60;
+        }
+        
+        .decision-option h3 {
+            margin-bottom: 10px;
+            color: #27ae60;
+        }
+        
+        .action-button {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+        
+        .action-button:hover {
+            background-color: #00a884;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom-color: var(--primary-color);
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .itinerary-container {
+            background-color: var(--card-color);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        .itinerary-container.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .itinerary-container h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .itinerary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .itinerary-item:last-child {
+            border-bottom: none;
+        }
+        
+        .itinerary-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .itinerary-title {
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+        
+        .itinerary-location {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .itinerary-time {
+            font-weight: 500;
+        }
+        
+        .updated {
+            background-color: #e8f5f0;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+        
+        .status-badge.rescheduled {
+            background-color: #fdcb6e;
+            color: #2d3436;
+        }
+        
+        .status-badge.new {
+            background-color: #55efc4;
+            color: #2d3436;
+        }
+        
+        .progress-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        
+        .progress-title {
+            font-weight: 500;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-status {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+            gap: 15px;
+        }
+        
+        .control-btn {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .control-btn:hover {
+            background-color: #00a884;
+        }
+        
+        .control-btn.secondary {
+            background-color: #e0e0e0;
+            color: var(--text-color);
+        }
+        
+        .control-btn.secondary:hover {
+            background-color: #d0d0d0;
+        }
+        
+        @media (max-width: 768px) {
+            .decision-options {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>VoyagerVerse Agentic AI Travel Assistant</h1>
+            <p>Behind-the-scenes agent calling process</p>
+        </div>
+        
+        <div class="user-query">
+            <h2>User Request:</h2>
+            <p>"My wife has a headache from the flight. Can we postpone the desert safari?"</p>
+        </div>
+        
+        <div class="agent-calling-container">
+            <div class="agent-card weather" id="weather-agent">
+                <div class="agent-header">
+                    <div class="agent-title">
+                        <h3>Weather Assessment Agent</h3>
+                        <span class="agent-badge weather">Weather API</span>
+                    </div>
+                    <div class="agent-timestamp">10:15:22 AM</div>
+                </div>
+                <p>Checking current and forecasted weather conditions for the desert safari location</p>
+                <div class="code-block">
+                    get_current_weather_weatherapi(location="Dubai Desert Conservation Reserve", units="metric")
+                </div>
+                <div class="response-block">
+                    {
+                        "location": "Dubai Desert Conservation Reserve",
+                        "temperature": 45.2,
+                        "feels_like": 48.7,
+                        "humidity": 12,
+                        "wind_speed": 15.3,
+                        "conditions": "Sunny",
+                        "uv_index": 11,
+                        "heat_warning": "Extreme"
+                    }
+                </div>
+            </div>
+            
+            <div class="agent-card health" id="health-agent">
+                <div class="agent-header">
+                    <div class="agent-title">
+                        <h3>Health Risk Assessment Agent</h3>
+                        <span class="agent-badge health">Health API</span>
+                    </div>
+                    <div class="agent-timestamp">10:15:24 AM</div>
+                </div>
+                <p>Evaluating health risks based on current conditions and traveler state</p>
+                <div class="code-block">
+                    evaluate_health_risk(conditions={"temperature": 45.2, "uv_index": 11, "heat_warning": "Extreme"}, 
+                                       traveler_state={"headache": true, "jetlag": true, "dehydration_risk": "high"})
+                </div>
+                <div class="response-block">
+                    {
+                        "risk_level": "High",
+                        "recommendations": ["Avoid outdoor activities during peak heat", "Stay hydrated", "Rest in cool environment"],
+                        "medical_warning": "Exposure to extreme heat may worsen headache and increase risk of heat exhaustion"
+                    }
+                </div>
+            </div>
+            
+            <div class="agent-card preference" id="preference-agent">
+                <div class="agent-header">
+                    <div class="agent-title">
+                        <h3>Preference Matching Agent</h3>
+                        <span class="agent-badge preference">Preference API</span>
+                    </div>
+                    <div class="agent-timestamp">10:15:26 AM</div>
+                </div>
+                <p>Finding alternative activities that match traveler preferences</p>
+                <div class="code-block">
+                    find_matching_activities(location="Dubai", preferences=["cultural", "indoor", "educational"], 
+                                           time_slot={"start": "11:00", "end": "15:00"}, 
+                                           proximity="within 20 minutes of current location")
+                </div>
+                <div class="response-block">
+                    [
+                        {
+                            "name": "Dubai Museum",
+                            "type": "cultural",
+                            "indoor": true,
+                            "rating": 4.6,
+                            "distance": "15 minutes",
+                            "availability": "Available",
+                            "description": "Located in the Al Fahidi Fort, Dubai's oldest building dating from 1787. Features exhibits on traditional Emirati culture and history."
+                        },
+                        {
+                            "name": "Dubai Frame",
+                            "type": "cultural",
+                            "indoor": true,
+                            "rating": 4.5,
+                            "distance": "18 minutes",
+                            "availability": "Available",
+                            "description": "Iconic structure offering views of both old and new Dubai, with multimedia exhibits on Dubai's transformation."
+                        },
+                        {
+                            "name": "Etihad Museum",
+                            "type": "cultural",
+                            "indoor": true,
+                            "rating": 4.4,
+                            "distance": "22 minutes",
+                            "availability": "Available",
+                            "description": "Documents the founding story of the UAE, with focus on the period between 1968 and 1974."
+                        }
+                    ]
+                </div>
+            </div>
+            
+            <div class="agent-card booking" id="booking-agent">
+                <div class="agent-header">
+                    <div class="agent-title">
+                        <h3>Booking Management Agent</h3>
+                        <span class="agent-badge booking">Booking API</span>
+                    </div>
+                    <div class="agent-timestamp">10:15:29 AM</div>
+                </div>
+                <p>Checking cancellation policy and alternative booking options</p>
+                <div class="code-block">
+                    check_cancellation_policy(booking_id="DSF-12345", booking_type="activity", 
+                                            provider="Dubai Desert Adventures")
+                </div>
+                <div class="response-block">
+                    {
+                        "cancellation_policy": "Free cancellation up to 24 hours before start time",
+                        "current_status": "Within free cancellation period",
+                        "refund_amount": "100%",
+                        "reschedule_options": [
+                            {"date": "2023-05-16", "time": "06:00", "availability": "Available"},
+                            {"date": "2023-05-15", "time": "17:00", "availability": "Available"}
+                        ]
+                    }
+                </div>
+            </div>
+        </div>
+        
+        <div class="decision-container" id="decision-container">
+            <h2>Agentic Decision Process</h2>
+            <p>Based on the data gathered from multiple agents, VoyagerVerse has autonomously determined:</p>
+            
+            <div class="code-block">
+                # Decision Logic
+                if weather_conditions["heat_warning"] == "Extreme" and health_risk["risk_level"] == "High":
+                    recommend_alternative = True
+                    
+                if recommend_alternative:
+                    # Find best matching alternative
+                    best_match = max(alternative_activities, key=lambda x: x["rating"])
+                    
+                    # Check if desert safari can be rescheduled
+                    if len(cancellation_policy["reschedule_options"]) > 0:
+                        reschedule = True
+                        reschedule_options = cancellation_policy["reschedule_options"]
+            </div>
+            
+            <p>The AI has determined that the desert safari should be postponed due to:</p>
+            <ul>
+                <li>Extreme heat conditions (45.2°C) that could worsen Priya's headache</li>
+                <li>High health risk assessment for outdoor activities</li>
+                <li>Availability of highly-rated indoor cultural alternatives that match their preferences</li>
+                <li>Favorable cancellation policy allowing for free rescheduling</li>
+            </ul>
+            
+            <div class="decision-options">
+                <div class="decision-option">
+                    <h3>Immediate Alternative</h3>
+                    <p><strong>Dubai Museum</strong> at 11:00 AM</p>
+                    <p>Indoor, air-conditioned cultural experience that matches their preference profile</p>
+                    <p>Only 15 minutes from their current location</p>
+                </div>
+                
+                <div class="decision-option">
+                    <h3>Desert Safari Rescheduling</h3>
+                    <p><strong>Option 1:</strong> Tomorrow morning (6:00 AM - 10:00 AM)</p>
+                    <p><strong>Option 2:</strong> This evening (5:00 PM - 9:00 PM)</p>
+                    <p>Both options offer cooler temperatures and better conditions</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="itinerary-container" id="itinerary-container">
+            <h2>Updated Itinerary</h2>
+            
+            <div class="itinerary-item">
+                <div class="itinerary-details">
+                    <div class="itinerary-title">Hotel Breakfast</div>
+                    <div class="itinerary-location">Hotel Restaurant</div>
+                </div>
+                <div class="itinerary-time">09:00 AM</div>
+            </div>
+            
+            <div class="itinerary-item updated">
+                <div class="itinerary-details">
+                    <div class="itinerary-title">Dubai Museum <span class="status-badge new">New</span></div>
+                    <div class="itinerary-location">Al Fahidi Fort, Bur Dubai</div>
+                </div>
+                <div class="itinerary-time">11:00 AM</div>
+            </div>
+            
+            <div class="itinerary-item">
+                <div class="itinerary-details">
+                    <div class="itinerary-title">Lunch at Al Hadeerah</div>
+                    <div class="itinerary-location">Downtown Dubai</div>
+                </div>
+                <div class="itinerary-time">02:00 PM</div>
+            </div>
+            
+            <div class="itinerary-item">
+                <div class="itinerary-details">
+                    <div class="itinerary-title">Dubai Mall & Fountain Show</div>
+                    <div class="itinerary-location">Downtown Dubai</div>
+                </div>
+                <div class="itinerary-time">04:00 PM</div>
+            </div>
+            
+            <div class="itinerary-item">
+                <div class="itinerary-details">
+                    <div class="itinerary-title">Dinner Cruise</div>
+                    <div class="itinerary-location">Dubai Marina</div>
+                </div>
+                <div class="itinerary-time">07:00 PM</div>
+            </div>
+            
+            <div class="itinerary-item updated">
+                <div class="itinerary-details">
+                    <div class="itinerary-title">Desert Safari <span class="status-badge rescheduled">Rescheduled</span></div>
+                    <div class="itinerary-location">Dubai Desert</div>
+                </div>
+                <div class="itinerary-time">Tomorrow 6:00 AM</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="progress-container">
+        <div class="progress-title">Processing Request</div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <div class="progress-status" id="progress-status">0%</div>
+    </div>
+    
+    <div class="controls">
+        <button class="control-btn" id="start-btn">Start Demo</button>
+        <button class="control-btn secondary" id="reset-btn">Reset</button>
+    </div>
+    
+    <script>
+        // Get DOM elements
+        const weatherAgent = document.getElementById('weather-agent');
+        const healthAgent = document.getElementById('health-agent');
+        const preferenceAgent = document.getElementById('preference-agent');
+        const bookingAgent = document.getElementById('booking-agent');
+        const decisionContainer = document.getElementById('decision-container');
+        const itineraryContainer = document.getElementById('itinerary-container');
+        const progressFill = document.getElementById('progress-fill');
+        const progressStatus = document.getElementById('progress-status');
+        const startBtn = document.getElementById('start-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        
+        // Initialize
+        function initialize() {
+            // Hide all agent cards
+            weatherAgent.classList.remove('active');
+            healthAgent.classList.remove('active');
+            preferenceAgent.classList.remove('active');
+            bookingAgent.classList.remove('active');
+            decisionContainer.classList.remove('active');
+            itineraryContainer.classList.remove('active');
+            
+            // Reset progress
+            progressFill.style.width = '0%';
+            progressStatus.textContent = '0%';
+        }
+        
+        // Start the demo
+        function startDemo() {
+            initialize();
+            
+            // Show weather agent after a delay
+            setTimeout(() => {
+                weatherAgent.classList.add('active');
+                progressFill.style.width = '20%';
+                progressStatus.textContent = '20% - Weather Assessment';
+            }, 1000);
+            
+            // Show health agent after a delay
+            setTimeout(() => {
+                healthAgent.classList.add('active');
+                progressFill.style.width = '40%';
+                progressStatus.textContent = '40% - Health Risk Assessment';
+            }, 3000);
+            
+            // Show preference agent after a delay
+            setTimeout(() => {
+                preferenceAgent.classList.add('active');
+                progressFill.style.width = '60%';
+                progressStatus.textContent = '60% - Preference Matching';
+            }, 5000);
+            
+            // Show booking agent after a delay
+            setTimeout(() => {
+                bookingAgent.classList.add('active');
+                progressFill.style.width = '80%';
+                progressStatus.textContent = '80% - Booking Management';
+            }, 7000);
+            
+            // Show decision after a delay
+            setTimeout(() => {
+                decisionContainer.classList.add('active');
+                progressFill.style.width = '90%';
+                progressStatus.textContent = '90% - Decision Making';
+            }, 9000);
+            
+            // Show itinerary after a delay
+            setTimeout(() => {
+                itineraryContainer.classList.add('active');
+                progressFill.style.width = '100%';
+                progressStatus.textContent = '100% - Complete';
+            }, 11000);
+        }
+        
+        // Add event listeners
+        startBtn.addEventListener('click', startDemo);
+        resetBtn.addEventListener('click', initialize);
+        
+        // Initialize on page load
+        window.addEventListener('load', initialize);
+    </script>
+</body>
+</html>

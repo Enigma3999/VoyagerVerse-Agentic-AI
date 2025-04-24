@@ -628,7 +628,6 @@ def generate_chat_response(message: str) -> str:
         # Default response
         return "I'm your VoyagerVerse agentic AI assistant for Dubai. I can help with weather updates, itinerary information, restaurant recommendations, attraction suggestions, transportation options, local customs, and personalized recommendations based on your preferences and current conditions."
 
-@app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
     return templates.TemplateResponse("home_v2.html", {"request": request})
 
@@ -637,6 +636,104 @@ async def dashboard(request: Request):
     """Serve the dashboard UI for Tom & Priya."""
     # Initialize Tom & Priya scenario data
     initialize_tom_priya_scenario()
+
+@app.get("/mobile", response_class=HTMLResponse)
+async def mobile_app(request: Request):
+    """Serve the mobile app UI"""
+    # Initialize Tom & Priya scenario data
+    initialize_tom_priya_scenario()
+    return templates.TemplateResponse("mobile_app.html", {
+        "request": request,
+        "traveler_name": "Tom & Priya",
+        "current_date": datetime.now().strftime("%A, %B %d, %Y")
+    })
+
+@app.get("/user-mobile", response_class=HTMLResponse)
+async def user_mobile_app(request: Request):
+    """Serve the user-focused mobile app UI for Tom & Priya"""
+    # Initialize Tom & Priya scenario data
+    initialize_tom_priya_scenario()
+    return templates.TemplateResponse("user_mobile_app.html", {
+        "request": request,
+        "traveler_name": "Tom & Priya",
+        "current_date": datetime.now().strftime("%A, %B %d, %Y")
+    })
+
+@app.get("/fallback-mobile", response_class=HTMLResponse)
+async def fallback_mobile_app(request: Request):
+    """Serve the fallback mobile app UI with option to decline rescheduling"""
+    # Initialize Tom & Priya scenario data
+    initialize_tom_priya_scenario()
+    return templates.TemplateResponse("mobile_app_fallback.html", {
+        "request": request,
+        "traveler_name": "Tom & Priya",
+        "current_date": datetime.now().strftime("%A, %B %d, %Y")
+    })
+
+@app.get("/demo", response_class=HTMLResponse)
+async def demo_mobile_app(request: Request):
+    """Serve the simplified demo mobile app UI"""
+    # Initialize Tom & Priya scenario data
+    initialize_tom_priya_scenario()
+    return templates.TemplateResponse("demo_mobile.html", {
+        "request": request,
+        "traveler_name": "Tom & Priya",
+        "current_date": datetime.now().strftime("%A, %B %d, %Y")
+    })
+
+@app.get("/conversation-demo", response_class=HTMLResponse)
+async def conversation_demo(request: Request):
+    """Serve the conversational demo interface that showcases natural language interaction"""
+    # Initialize Tom & Priya scenario data
+    initialize_tom_priya_scenario()
+    return templates.TemplateResponse("conversation_demo.html", {
+        "request": request
+    })
+
+@app.get("/agent-calling-demo", response_class=HTMLResponse)
+async def agent_calling_demo(request: Request):
+    """Serve the agent calling demo interface that showcases the agentic AI process"""
+    # Initialize Tom & Priya scenario data
+    initialize_tom_priya_scenario()
+    return templates.TemplateResponse("tool_calling_demo.html", {
+        "request": request
+    })
+
+@app.get("/conversation-ui", response_class=HTMLResponse)
+async def conversation_ui(request: Request):
+    """Serve the conversational UI that demonstrates natural language interaction"""
+    # Initialize Tom & Priya scenario data
+    initialize_tom_priya_scenario()
+    return templates.TemplateResponse("conversation_ui.html", {
+        "request": request
+    })
+
+@app.get("/simple-chat", response_class=HTMLResponse)
+async def simple_chat_demo(request: Request):
+    """Serve the simplified chat demo that works reliably for the presentation"""
+    # Initialize Tom & Priya scenario data
+    initialize_tom_priya_scenario()
+    return templates.TemplateResponse("simple_chat_demo.html", {
+        "request": request
+    })
+
+@app.get("/agent-calling", response_class=HTMLResponse)
+async def agent_calling_ui(request: Request):
+    """Serve the agent calling UI that shows the behind-the-scenes process"""
+    # Initialize Tom & Priya scenario data
+    initialize_tom_priya_scenario()
+    return templates.TemplateResponse("agent_calling_ui.html", {
+        "request": request
+    })
+
+@app.get("/simple-agent", response_class=HTMLResponse)
+async def simple_agent_ui(request: Request):
+    """Serve the simplified agent UI that shows the behind-the-scenes process without animations"""
+    # Initialize Tom & Priya scenario data
+    initialize_tom_priya_scenario()
+    return templates.TemplateResponse("simple_agent_ui.html", {
+        "request": request
+    })
     
     # Get current weather
     weather_data = {}
@@ -662,6 +759,52 @@ async def dashboard(request: Request):
         "itinerary": itinerary_data,
         "traveler_name": "Tom & Priya",
         "current_date": datetime.now().strftime("%A, %B %d, %Y")
+    })
+
+@app.get("/interactive", response_class=HTMLResponse)
+async def interactive_demo(request: Request):
+    """Serve the interactive demo page showing the agentic AI architecture from user's perspective."""
+    # Initialize Tom & Priya scenario data
+    initialize_tom_priya_scenario()
+    
+    # Sample data for the interactive demo
+    demo_data = {
+        "traveler_name": "Tom & Priya",
+        "current_date": datetime.now().strftime("%A, %B %d, %Y"),
+        "weather": {
+            "temperature": 44,
+            "condition": "Sunny",
+            "humidity": 28,
+            "feels_like": 47,
+            "uv_index": "Extreme",
+            "wind_speed": 12
+        },
+        "original_activity": {
+            "name": "Desert Safari",
+            "location": "Dubai Desert Conservation Reserve",
+            "time": "11:00-15:00",
+            "is_outdoor": True,
+            "category": "adventure"
+        },
+        "alternative_activity": {
+            "name": "Dubai Museum Visit",
+            "location": "Al Fahidi Fort",
+            "time": "11:00-13:00",
+            "is_outdoor": False,
+            "category": "cultural"
+        },
+        "preferences": {
+            "max_comfortable_temperature": 38,
+            "preferred_dining_time": "19:00",
+            "cuisine_preferences": ["Indian", "Mediterranean", "Arabic"],
+            "activity_preferences": ["cultural", "adventure", "relaxation"],
+            "budget_level": "premium"
+        }
+    }
+    
+    return templates.TemplateResponse("interactive_demo.html", {
+        "request": request,
+        "demo_data": demo_data
     })
 
 @app.get("/weather")

@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoyagerVerse - Simple Chat Demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #00b894;
+            --background-color: #f5f6fa;
+            --card-color: #ffffff;
+            --text-color: #2d3436;
+            --text-secondary: #636e72;
+            --border-color: #dfe6e9;
+            --ai-message-bg: #e8f5f0;
+            --user-message-bg: #f1f2f6;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .app-header {
+            background-color: #00b894;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .app-title {
+            font-size: 18px;
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        .phone-status {
+            position: absolute;
+            top: 5px;
+            right: 15px;
+            font-size: 12px;
+        }
+        
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+        
+        .message {
+            max-width: 80%;
+            padding: 12px 15px;
+            border-radius: 18px;
+            margin-bottom: 15px;
+            position: relative;
+            word-wrap: break-word;
+            font-size: 14px;
+        }
+        
+        .ai-message {
+            background-color: #e8f5f0;
+            border-bottom-left-radius: 5px;
+            margin-right: auto;
+            color: var(--text-color);
+        }
+        
+        .user-message {
+            background-color: #f1f2f6;
+            border-bottom-right-radius: 5px;
+            margin-left: auto;
+            text-align: right;
+            color: var(--text-color);
+        }
+        
+        .message-time {
+            font-size: 10px;
+            color: #636e72;
+            margin-top: 5px;
+        }
+        
+        .input-container {
+            display: flex;
+            padding: 10px;
+            background-color: white;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .message-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            outline: none;
+            margin-right: 10px;
+        }
+        
+        .send-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .mic-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #f1f2f6;
+            color: var(--text-secondary);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-right: 10px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            width: 100%;
+        }
+        
+        .card-title {
+            font-weight: 500;
+            margin-bottom: 10px;
+            color: #00b894;
+        }
+        
+        .itinerary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+            max-width: 100%;
+        }
+        
+        .itinerary-item:last-child {
+            border-bottom: none;
+        }
+        
+        .item-details {
+            display: flex;
+            flex-direction: column;
+            width: auto;
+            min-width: 0;
+            padding-right: 5px;
+        }
+        
+        .item-title {
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .item-location {
+            font-size: 12px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .item-time {
+            font-weight: 500;
+            white-space: nowrap;
+            text-align: right;
+        }
+        
+        .alternative-item {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            background-color: #f8f9fa;
+            border-left: 3px solid var(--primary-color);
+        }
+        
+        .alternative-title {
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+        
+        .alternative-details {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 15px;
+        }
+        
+        .action-btn {
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 14px;
+        }
+        
+        .confirm-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+        
+        .cancel-btn {
+            background-color: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .step-buttons {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .step-btn {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-header">
+        <div class="phone-status">9:42 AM • 📱</div>
+        <div class="app-title">VoyagerVerse</div>
+    </div>
+    
+    <div class="chat-container" id="chat-container">
+        <!-- Initial state - AI greeting and itinerary -->
+        <div class="message ai-message" id="greeting">
+            Good morning, welcome to Dubai! 🌞
+            <div class="message-time">9:42 AM</div>
+        </div>
+        
+        <div class="message ai-message" id="itinerary-intro">
+            Here's your itinerary for today:
+            <div class="message-time">9:42 AM</div>
+        </div>
+        
+        <div class="card" id="initial-itinerary">
+            <div class="card-title">Today's itinerary</div>
+            <div class="itinerary-item">
+                <div class="item-details">
+                    <div class="item-title">Hotel Breakfast</div>
+                    <div class="item-location">Hotel Restaurant</div>
+                </div>
+                <div class="item-time">09:00 AM</div>
+            </div>
+            <div class="itinerary-item">
+                <div class="item-details">
+                    <div class="item-title">Desert Safari</div>
+                    <div class="item-location">Dubai Desert</div>
+                </div>
+                <div class="item-time">11:00 AM</div>
+            </div>
+            <div class="itinerary-item">
+                <div class="item-details">
+                    <div class="item-title">Lunch at Al Hadeerah</div>
+                    <div class="item-location">Desert Restaurant</div>
+                </div>
+                <div class="item-time">02:00 PM</div>
+            </div>
+            <div class="itinerary-item">
+                <div class="item-details">
+                    <div class="item-title">Camel Riding</div>
+                    <div class="item-location">Dubai Desert</div>
+                </div>
+                <div class="item-time">04:00 PM</div>
+            </div>
+            <div class="itinerary-item">
+                <div class="item-details">
+                    <div class="item-title">Dinner Cruise</div>
+                    <div class="item-location">Dubai Marina</div>
+                </div>
+                <div class="item-time">07:00 PM</div>
+            </div>
+        </div>
+        
+        <!-- Step 2 - User message about headache (initially hidden) -->
+        <div class="message user-message hidden" id="user-headache-message">
+            My wife has a headache from the flight. Can we postpone the desert safari?
+            <div class="message-time">9:43 AM</div>
+        </div>
+        
+        <!-- Step 3 - AI response with alternatives (initially hidden) -->
+        <div class="message ai-message hidden" id="ai-weather-response">
+            I've checked the weather and it's extremely hot today (45°C). Given your wife's headache, I've found some indoor alternatives that might be more comfortable.
+            <div class="message-time">9:44 AM</div>
+        </div>
+        
+        <div class="message ai-message hidden" id="ai-alternative-response">
+            The Dubai Museum matches your interest in cultural activities and is just 15 minutes away from your hotel. Would you like me to book that instead?
+            <div class="message-time">9:44 AM</div>
+        </div>
+        
+        <div class="card hidden" id="alternative-card">
+            <div class="card-title">Recommended Alternative</div>
+            <div class="alternative-item">
+                <div class="alternative-title">Dubai Museum</div>
+                <div class="alternative-details">
+                    <p>📍 Al Fahidi Fort, Bur Dubai (15 min from your hotel)</p>
+                    <p>🕒 Available at 11:00 AM</p>
+                    <p>🏷️ Matches your preference for cultural activities</p>
+                    <p>🌡️ Indoor, air-conditioned environment</p>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="action-btn cancel-btn">No, thanks</button>
+                <button class="action-btn confirm-btn" id="confirm-museum">Yes, book this</button>
+            </div>
+        </div>
+        
+        <!-- Step 4 - User confirmation (initially hidden) -->
+        <div class="message user-message hidden" id="user-confirmation">
+            Yes, that sounds perfect.
+            <div class="message-time">9:45 AM</div>
+        </div>
+        
+        <!-- Step 5 - AI final response (initially hidden) -->
+        <div class="message ai-message hidden" id="ai-booking-confirmation">
+            Great! I've booked tickets for the Dubai Museum at 11:00 AM. I've also arranged transportation and negotiated a full refund for your desert safari.
+            <div class="message-time">9:45 AM</div>
+        </div>
+        
+        <div class="message ai-message hidden" id="ai-final-message">
+            Your updated itinerary is now available. I've also rescheduled the desert safari for tomorrow morning when it will be cooler.
+            <div class="message-time">9:46 AM</div>
+        </div>
+        
+        <div class="card hidden" id="updated-itinerary">
+            <div class="card-title">Updated itinerary</div>
+            <div class="itinerary-item">
+                <div class="item-details">
+                    <div class="item-title">Hotel Breakfast</div>
+                    <div class="item-location">Hotel Restaurant</div>
+                </div>
+                <div class="item-time">09:00 AM</div>
+            </div>
+            <div class="itinerary-item" style="background-color: #e8f5f0;">
+                <div class="item-details">
+                    <div class="item-title">Dubai Museum</div>
+                    <div class="item-location">Al Fahidi Fort, Bur Dubai</div>
+                </div>
+                <div class="item-time">11:00 AM</div>
+            </div>
+            <div class="itinerary-item">
+                <div class="item-details">
+                    <div class="item-title">Lunch at Al Hadeerah</div>
+                    <div class="item-location">Downtown Dubai</div>
+                </div>
+                <div class="item-time">02:00 PM</div>
+            </div>
+            <div class="itinerary-item">
+                <div class="item-details">
+                    <div class="item-title">Dubai Mall & Fountain Show</div>
+                    <div class="item-location">Downtown Dubai</div>
+                </div>
+                <div class="item-time">04:00 PM</div>
+            </div>
+            <div class="itinerary-item">
+                <div class="item-details">
+                    <div class="item-title">Dinner Cruise</div>
+                    <div class="item-location">Dubai Marina</div>
+                </div>
+                <div class="item-time">07:00 PM</div>
+            </div>
+            <div class="itinerary-item" style="background-color: #e8f5f0;">
+                <div class="item-details">
+                    <div class="item-title">Desert Safari (Rescheduled)</div>
+                    <div class="item-location">Dubai Desert</div>
+                </div>
+                <div class="item-time">Tomorrow 6:00 AM</div>
+            </div>
+        </div>
+    </div>
+    
+
+    
+    <div class="input-container">
+        <button class="mic-btn" id="mic-btn">🎤</button>
+        <input type="text" class="message-input" id="message-input" placeholder="Type a message..." value="My wife has a headache from the flight. Can we postpone the desert safari?">
+        <button class="send-btn" id="send-btn">➤</button>
+    </div>
+    
+    <script>
+        // Get DOM elements
+        const chatContainer = document.getElementById('chat-container');
+        const messageInput = document.getElementById('message-input');
+        const sendBtn = document.getElementById('send-btn');
+        const micBtn = document.getElementById('mic-btn');
+        
+        // Step elements
+        const userHeadacheMessage = document.getElementById('user-headache-message');
+        const aiWeatherResponse = document.getElementById('ai-weather-response');
+        const aiAlternativeResponse = document.getElementById('ai-alternative-response');
+        const alternativeCard = document.getElementById('alternative-card');
+        const userConfirmation = document.getElementById('user-confirmation');
+        const aiBookingConfirmation = document.getElementById('ai-booking-confirmation');
+        const aiFinalMessage = document.getElementById('ai-final-message');
+        const updatedItinerary = document.getElementById('updated-itinerary');
+        
+        // Functions to control the conversation flow
+        // Hide all elements except initial state
+        function resetToInitialState() {
+            userHeadacheMessage.classList.add('hidden');
+            aiWeatherResponse.classList.add('hidden');
+            aiAlternativeResponse.classList.add('hidden');
+            alternativeCard.classList.add('hidden');
+            userConfirmation.classList.add('hidden');
+            aiBookingConfirmation.classList.add('hidden');
+            aiFinalMessage.classList.add('hidden');
+            updatedItinerary.classList.add('hidden');
+        }
+
+        // Show elements for step 2 (user request)
+        function showStep2() {
+            resetToInitialState();
+            userHeadacheMessage.classList.remove('hidden');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // Show elements for step 3 (AI response)
+        function showStep3() {
+            resetToInitialState();
+            userHeadacheMessage.classList.remove('hidden');
+            aiWeatherResponse.classList.remove('hidden');
+            aiAlternativeResponse.classList.remove('hidden');
+            alternativeCard.classList.remove('hidden');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // Show elements for step 4 (user confirmation)
+        function showStep4() {
+            resetToInitialState();
+            userHeadacheMessage.classList.remove('hidden');
+            aiWeatherResponse.classList.remove('hidden');
+            aiAlternativeResponse.classList.remove('hidden');
+            alternativeCard.classList.remove('hidden');
+            userConfirmation.classList.remove('hidden');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // Show elements for step 5 (final result)
+        function showStep5() {
+            resetToInitialState();
+            userHeadacheMessage.classList.remove('hidden');
+            aiWeatherResponse.classList.remove('hidden');
+            aiAlternativeResponse.classList.remove('hidden');
+            alternativeCard.classList.remove('hidden');
+            userConfirmation.classList.remove('hidden');
+            aiBookingConfirmation.classList.remove('hidden');
+            aiFinalMessage.classList.remove('hidden');
+            updatedItinerary.classList.remove('hidden');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        
+        // Add event listener to send button
+        sendBtn.addEventListener('click', function() {
+            // First show the user message
+            showStep2();
+            
+            // After a short delay, show the AI response
+            setTimeout(() => {
+                showStep3();
+            }, 1000);
+        });
+        
+        // Add event listener to mic button
+        micBtn.addEventListener('click', function() {
+            messageInput.focus();
+        });
+        
+        // Add event listener to confirm button
+        document.getElementById('confirm-museum').addEventListener('click', function() {
+            // First show the user confirmation
+            showStep4();
+            
+            // After a short delay, show the final result
+            setTimeout(() => {
+                showStep5();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

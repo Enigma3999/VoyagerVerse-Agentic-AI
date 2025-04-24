@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoyagerVerse - Agentic AI Travel Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #00b894;
+            --background-color: #f5f6fa;
+            --card-color: #ffffff;
+            --text-color: #2d3436;
+            --text-secondary: #636e72;
+            --border-color: #dfe6e9;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .app-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .app-title {
+            text-align: center;
+            font-size: 16px;
+            font-weight: 400;
+            margin-bottom: 8px;
+        }
+        
+        .app-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .menu-icon {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .app-logo {
+            font-size: 20px;
+            font-weight: 500;
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #f1f2f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .tab-navigation {
+            display: flex;
+            background-color: white;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-secondary);
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            color: var(--text-color);
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        .content-area {
+            padding: 16px;
+        }
+        
+        .date-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .today-label {
+            display: flex;
+            align-items: center;
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        .calendar-icon {
+            color: var(--primary-color);
+            margin-right: 8px;
+            font-size: 24px;
+        }
+        
+        .date {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .itinerary-item {
+            background-color: var(--card-color);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .item-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: var(--text-color);
+        }
+        
+        .item-location {
+            display: flex;
+            align-items: center;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .location-icon {
+            margin-right: 4px;
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+        
+        .item-time {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            font-weight: 500;
+            color: var(--text-color);
+            font-size: 14px;
+        }
+        
+        .preferences-section {
+            margin-top: 24px;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: var(--text-color);
+        }
+        
+        .person-icon {
+            color: var(--primary-color);
+            margin-right: 8px;
+            font-size: 20px;
+        }
+        
+        .preference-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .preference-tag {
+            background-color: #e8f5f0;
+            color: var(--primary-color);
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .weather-alert {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .alert-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .alert-icon {
+            margin-right: 8px;
+        }
+        
+        .alert-message {
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+        
+        .alert-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+        
+        .alert-btn {
+            background-color: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        /* AI Process Tab */
+        .process-container {
+            display: none;
+            padding: 16px;
+        }
+        
+        .process-container.active {
+            display: block;
+        }
+        
+        /* Insights Tab */
+        .insights-container {
+            display: none;
+            padding: 16px;
+        }
+        
+        .insights-container.active {
+            display: block;
+        }
+        
+        /* Details Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            overflow: auto;
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 8px;
+        }
+        
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        
+        .feedback-container {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .feedback-title {
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        
+        .feedback-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .feedback-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <div class="app-title">Voyager Verse - Agentic AI Travel Assistant</div>
+        <div class="app-nav">
+            <div class="menu-icon">☰</div>
+            <div class="app-logo">Voyager Verse</div>
+            <div class="user-avatar">
+                <div style="background-color: #f5f6fa; width: 100%; height: 100%;"></div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="tab-navigation">
+        <div class="tab active" data-tab="itinerary">Itinerary</div>
+        <div class="tab" data-tab="ai-process">AI Process</div>
+        <div class="tab" data-tab="insights">Insights</div>
+    </div>
+    
+    <!-- Itinerary Tab -->
+    <div class="content-area" id="itinerary-tab">
+        <div class="date-header">
+            <div class="today-label">
+                <span class="calendar-icon">📅</span>
+                Today's Itinerary
+            </div>
+            <div class="date">May 15, 2023</div>
+        </div>
+        
+        <div class="itinerary-item">
+            <div class="item-title">Hotel Breakfast</div>
+            <div class="item-location">
+                <span class="location-icon">📍</span>
+                Hotel Restaurant
+            </div>
+            <div class="item-time">09:00 AM</div>
+        </div>
+        
+        <div class="itinerary-item">
+            <div class="item-title">Desert Safari</div>
+            <div class="item-location">
+                <span class="location-icon">📍</span>
+                Dubai Desert
+            </div>
+            <div class="item-time">11:00 AM</div>
+        </div>
+        
+        <div class="itinerary-item">
+            <div class="item-title">Lunch at Al Hadeerah</div>
+            <div class="item-location">
+                <span class="location-icon">📍</span>
+                Desert Restaurant
+            </div>
+            <div class="item-time">02:00 PM</div>
+        </div>
+        
+        <div class="itinerary-item">
+            <div class="item-title">Camel Riding</div>
+            <div class="item-location">
+                <span class="location-icon">📍</span>
+                Dubai Desert
+            </div>
+            <div class="item-time">04:00 PM</div>
+        </div>
+        
+        <div class="itinerary-item">
+            <div class="item-title">Dinner Cruise</div>
+            <div class="item-location">
+                <span class="location-icon">📍</span>
+                Dubai Marina
+            </div>
+            <div class="item-time">07:00 PM</div>
+        </div>
+        
+        <div class="weather-alert">
+            <div class="alert-title">
+                <span class="alert-icon">⚠️</span>
+                Weather Alert: Extreme Heat
+            </div>
+            <div class="alert-message">
+                Your Desert Safari has been rescheduled due to unsafe temperatures. I've booked the Dubai Museum instead.
+            </div>
+            <div class="alert-actions">
+                <button class="alert-btn" id="view-details-btn">View Details</button>
+                <button class="alert-btn" id="accept-btn">Accept</button>
+            </div>
+        </div>
+        
+        <div class="preferences-section">
+            <div class="section-title">
+                <span class="person-icon">👤</span>
+                Your Preferences
+            </div>
+            <div class="preference-tags">
+                <div class="preference-tag">Cultural Activities</div>
+                <div class="preference-tag">Outdoor Activities</div>
+                <div class="preference-tag">Fine Dining</div>
+                <div class="preference-tag">Photography</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- AI Process Tab -->
+    <div class="process-container" id="ai-process-tab">
+        <h2>AI Process Content</h2>
+        <p>This tab will show the AI's decision-making process.</p>
+    </div>
+    
+    <!-- Insights Tab -->
+    <div class="insights-container" id="insights-tab">
+        <h2>Insights Content</h2>
+        <p>This tab will show insights about your trip and preferences.</p>
+    </div>
+    
+    <!-- Weather Alert Details Modal -->
+    <div class="modal" id="details-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3 style="color: var(--primary-color); margin-bottom: 15px;">Weather Alert Details</h3>
+            <div style="margin-bottom: 15px;">
+                <h4>Current Conditions:</h4>
+                <p>Temperature: 44°C (Extreme Heat)</p>
+                <p>Humidity: 28%</p>
+                <p>UV Index: Very High (10)</p>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <h4>Health & Safety Concerns:</h4>
+                <ul style="padding-left: 20px;">
+                    <li>High risk of heat exhaustion and heat stroke</li>
+                    <li>Dehydration risk, especially for travelers not acclimatized</li>
+                    <li>Sunburn risk within 15 minutes of exposure</li>
+                </ul>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <h4>Adaptation Details:</h4>
+                <p><strong>Original Activity:</strong> Desert Safari (11:00 AM - 3:00 PM)</p>
+                <p><strong>New Activity:</strong> Dubai Museum Visit (11:00 AM - 1:30 PM)</p>
+                <p><strong>Reason:</strong> Indoor, air-conditioned environment to avoid heat exposure during peak hours</p>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <h4>Desert Safari Options:</h4>
+                <p>We can reschedule your Desert Safari for:</p>
+                <ul style="padding-left: 20px;">
+                    <li>Tomorrow morning (6:00 AM - 10:00 AM)</li>
+                    <li>This evening (5:00 PM - 9:00 PM)</li>
+                </ul>
+                <p>Would you like me to book one of these alternatives?</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-outline" id="no-reschedule-btn">No, Keep Original Plan</button>
+                <button class="btn-primary" id="reschedule-btn">Reschedule Options</button>
+            </div>
+            
+            <!-- Feedback Container (appears when "No, Keep Original Plan" is clicked) -->
+            <div class="feedback-container" id="feedback-container">
+                <div class="feedback-title">Please tell us why you prefer the original plan:</div>
+                <textarea class="feedback-input" placeholder="e.g., I've prepared for the heat, I have special equipment, etc."></textarea>
+                <div class="feedback-actions">
+                    <button class="btn-primary" id="submit-feedback-btn">Submit & Keep Original Plan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab navigation
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = {
+                'itinerary': document.getElementById('itinerary-tab'),
+                'ai-process': document.getElementById('ai-process-tab'),
+                'insights': document.getElementById('insights-tab')
+            };
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    // Hide all tab contents
+                    Object.values(tabContents).forEach(content => {
+                        content.style.display = 'none';
+                    });
+                    
+                    // Show the corresponding tab content
+                    const tabId = this.getAttribute('data-tab');
+                    tabContents[tabId].style.display = 'block';
+                });
+            });
+            
+            // Initialize tab display
+            Object.values(tabContents).forEach(content => {
+                content.style.display = 'none';
+            });
+            tabContents['itinerary'].style.display = 'block';
+            
+            // Modal functionality
+            const modal = document.getElementById('details-modal');
+            const viewDetailsBtn = document.getElementById('view-details-btn');
+            const closeModalBtn = document.querySelector('.close-modal');
+            const noRescheduleBtn = document.getElementById('no-reschedule-btn');
+            const rescheduleBtn = document.getElementById('reschedule-btn');
+            const feedbackContainer = document.getElementById('feedback-container');
+            const submitFeedbackBtn = document.getElementById('submit-feedback-btn');
+            
+            viewDetailsBtn.addEventListener('click', function() {
+                modal.style.display = 'block';
+            });
+            
+            closeModalBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+                feedbackContainer.style.display = 'none'; // Hide feedback container when closing modal
+            });
+            
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                    feedbackContainer.style.display = 'none'; // Hide feedback container when closing modal
+                }
+            });
+            
+            // No Reschedule button functionality
+            noRescheduleBtn.addEventListener('click', function() {
+                feedbackContainer.style.display = 'block';
+                rescheduleBtn.style.display = 'none';
+                this.style.display = 'none';
+            });
+            
+            // Submit Feedback button functionality
+            submitFeedbackBtn.addEventListener('click', function() {
+                alert('Thank you for your feedback. We'll keep your original Desert Safari plan, but please take extra precautions in the heat.');
+                modal.style.display = 'none';
+                feedbackContainer.style.display = 'none';
+                
+                // Show a confirmation message on the main screen
+                const weatherAlert = document.querySelector('.weather-alert');
+                weatherAlert.innerHTML = `
+                    <div class="alert-title">
+                        <span class="alert-icon">✓</span>
+                        Original Plan Confirmed
+                    </div>
+                    <div class="alert-message">
+                        You've chosen to keep your Desert Safari as planned. I've sent heat safety tips to your email.
+                    </div>
+                `;
+            });
+            
+            // Accept button functionality
+            const acceptBtn = document.getElementById('accept-btn');
+            const weatherAlert = document.querySelector('.weather-alert');
+            
+            acceptBtn.addEventListener('click', function() {
+                weatherAlert.innerHTML = `
+                    <div class="alert-title">
+                        <span class="alert-icon">✓</span>
+                        Changes Accepted
+                    </div>
+                    <div class="alert-message">
+                        Your itinerary has been updated. Dubai Museum tickets have been booked for 11:00 AM.
+                    </div>
+                `;
+            });
+            
+            // Reschedule Options button functionality
+            rescheduleBtn.addEventListener('click', function() {
+                // Show reschedule options modal
+                modal.style.display = 'none';
+                
+                // Create and show the reschedule options modal
+                const rescheduleModal = document.createElement('div');
+                rescheduleModal.className = 'modal';
+                rescheduleModal.id = 'reschedule-modal';
+                rescheduleModal.style.display = 'block';
+                
+                rescheduleModal.innerHTML = `
+                    <div class="modal-content">
+                        <span class="close-modal" id="close-reschedule-modal">&times;</span>
+                        <h3 style="color: var(--primary-color); margin-bottom: 15px;">Reschedule Desert Safari</h3>
+                        <p>Please select your preferred time:</p>
+                        <div style="margin: 20px 0;">
+                            <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                                <input type="radio" id="morning-option" name="reschedule-time" value="morning">
+                                <label for="morning-option" style="margin-left: 10px;">Tomorrow morning (6:00 AM - 10:00 AM)</label>
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <input type="radio" id="evening-option" name="reschedule-time" value="evening" checked>
+                                <label for="evening-option" style="margin-left: 10px;">This evening (5:00 PM - 9:00 PM)</label>
+                            </div>
+                        </div>
+                        <div class="modal-actions">
+                            <button class="btn-outline" id="cancel-reschedule-btn">Cancel</button>
+                            <button class="btn-primary" id="confirm-reschedule-btn">Confirm Reschedule</button>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(rescheduleModal);
+                
+                // Add event listeners for the new modal
+                document.getElementById('close-reschedule-modal').addEventListener('click', function() {
+                    document.getElementById('reschedule-modal').remove();
+                });
+                
+                document.getElementById('cancel-reschedule-btn').addEventListener('click', function() {
+                    document.getElementById('reschedule-modal').remove();
+                });
+                
+                document.getElementById('confirm-reschedule-btn').addEventListener('click', function() {
+                    const selectedTime = document.querySelector('input[name="reschedule-time"]:checked').value;
+                    let timeText = '';
+                    
+                    if (selectedTime === 'morning') {
+                        timeText = 'tomorrow morning (6:00 AM - 10:00 AM)';
+                    } else {
+                        timeText = 'this evening (5:00 PM - 9:00 PM)';
+                    }
+                    
+                    // Update the weather alert to show rescheduling confirmation
+                    weatherAlert.innerHTML = `
+                        <div class="alert-title">
+                            <span class="alert-icon">✓</span>
+                            Desert Safari Rescheduled
+                        </div>
+                        <div class="alert-message">
+                            Your Desert Safari has been rescheduled for ${timeText}. Dubai Museum visit added for this morning.
+                        </div>
+                    `;
+                    
+                    // Show a success message
+                    const successMessage = document.createElement('div');
+                    successMessage.style.position = 'fixed';
+                    successMessage.style.bottom = '20px';
+                    successMessage.style.left = '50%';
+                    successMessage.style.transform = 'translateX(-50%)';
+                    successMessage.style.backgroundColor = 'var(--primary-color)';
+                    successMessage.style.color = 'white';
+                    successMessage.style.padding = '10px 20px';
+                    successMessage.style.borderRadius = '4px';
+                    successMessage.style.zIndex = '2000';
+                    successMessage.innerHTML = `<div>Successfully rescheduled! Tickets and transportation updated.</div>`;
+                    
+                    document.body.appendChild(successMessage);
+                    
+                    // Update the itinerary
+                    const desertSafariItem = document.querySelectorAll('.itinerary-item')[1];
+                    const newMuseumItem = desertSafariItem.cloneNode(true);
+                    
+                    // Update the Desert Safari item to show it's rescheduled
+                    if (selectedTime === 'morning') {
+                        desertSafariItem.querySelector('.item-title').innerHTML = 'Desert Safari <span style="color: var(--primary-color); font-size: 12px;">(Rescheduled)</span>';
+                        desertSafariItem.querySelector('.item-time').textContent = 'Tomorrow 6:00 AM';
+                    } else {
+                        desertSafariItem.querySelector('.item-title').innerHTML = 'Desert Safari <span style="color: var(--primary-color); font-size: 12px;">(Rescheduled)</span>';
+                        desertSafariItem.querySelector('.item-time').textContent = 'Today 5:00 PM';
+                    }
+                    
+                    // Update the new museum item
+                    newMuseumItem.querySelector('.item-title').textContent = 'Dubai Museum Visit';
+                    newMuseumItem.querySelector('.item-location').innerHTML = '<span class="location-icon">📍</span> Dubai Museum';
+                    newMuseumItem.querySelector('.item-time').textContent = '11:00 AM';
+                    
+                    // Insert the new museum item after the Desert Safari
+                    desertSafariItem.parentNode.insertBefore(newMuseumItem, desertSafariItem.nextSibling);
+                    
+                    // Remove the reschedule modal
+                    document.getElementById('reschedule-modal').remove();
+                    
+                    // Remove the success message after 3 seconds
+                    setTimeout(function() {
+                        successMessage.remove();
+                    }, 3000);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
