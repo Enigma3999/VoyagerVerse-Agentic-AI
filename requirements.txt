@@ -1,14 +1,28 @@
-fastapi
-uvicorn[standard]
-python-multipart
-aiofiles
-requests
-jinja2
-pydantic
-openai
-starlette
+# Core dependencies
+fastapi>=0.95.0
+uvicorn[standard]>=0.22.0
+python-multipart>=0.0.6
+pydantic>=1.10.7
+starlette>=0.27.0
 
-deep-translator
+# API and data handling
+requests>=2.28.2
+aiofiles>=23.1.0
+jinja2>=3.1.2
+deep-translator>=1.11.4
+python-dotenv>=1.11.4
+openai>=1.0.0
+pydantic>=2.0.0
+tiktoken
+tenacity>=8.0.1
+uvicorn
+python-dotenv
 
+# Agentic AI components
+openai>=0.27.8
+datetime>=5.1
+typing-extensions>=4.5.0
+python-dateutil>=2.8.2
 
-
+# For production deployment
+gunicorn>=20.1.0

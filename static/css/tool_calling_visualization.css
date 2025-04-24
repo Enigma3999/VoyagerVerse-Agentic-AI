@@ -1,0 +1,213 @@
+/* Tool Calling Visualization CSS for VoyagerVerse */
+
+.tool-calling-container {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #dadce0;
+    margin: 20px 0;
+    overflow: hidden;
+}
+
+.tool-calling-header {
+    background-color: #4285F4;
+    color: white;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tool-calling-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.tool-calls-container {
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 16px;
+}
+
+.tool-call {
+    display: flex;
+    margin-bottom: 12px;
+    padding: 10px;
+    border-radius: 6px;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.tool-icon {
+    font-size: 20px;
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+.tool-content {
+    flex: 1;
+}
+
+.tool-title {
+    font-weight: 500;
+    margin-bottom: 4px;
+    display: block;
+}
+
+.tool-call pre {
+    margin: 8px 0 0;
+    white-space: pre-wrap;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 13px;
+    overflow-x: auto;
+    background-color: rgba(0, 0, 0, 0.03);
+    padding: 8px;
+    border-radius: 4px;
+}
+
+/* Tool call types */
+.tool-call.request {
+    background-color: rgba(66, 133, 244, 0.1);
+    border-left: 3px solid #4285F4;
+}
+
+.tool-call.response {
+    background-color: rgba(15, 157, 88, 0.1);
+    border-left: 3px solid #0F9D58;
+}
+
+.tool-call.phase {
+    background-color: rgba(244, 180, 0, 0.1);
+    border-left: 3px solid #F4B400;
+    font-weight: 500;
+}
+
+.tool-call.loading {
+    background-color: rgba(219, 68, 55, 0.1);
+    border-left: 3px solid #DB4437;
+}
+
+.tool-call.summary {
+    background-color: rgba(66, 133, 244, 0.1);
+    border-left: 3px solid #4285F4;
+    font-weight: 500;
+}
+
+/* Controls */
+.tool-calling-controls {
+    padding: 12px 16px;
+    border-top: 1px solid #dadce0;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.tool-calling-controls button {
+    background-color: #4285F4;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.tool-calling-controls button:hover {
+    background-color: #3367d6;
+}
+
+.tool-calling-controls button:disabled {
+    background-color: #9aa0a6;
+    cursor: not-allowed;
+}
+
+/* Agentic phases visualization */
+.agentic-phases {
+    display: flex;
+    margin: 20px 0;
+    position: relative;
+}
+
+.agentic-phase {
+    flex: 1;
+    text-align: center;
+    padding: 12px 8px;
+    position: relative;
+    z-index: 1;
+}
+
+.agentic-phase-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #e8eaed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 8px;
+    font-size: 18px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.agentic-phase-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #5f6368;
+    transition: color 0.3s;
+}
+
+.agentic-phase-description {
+    font-size: 12px;
+    color: #80868b;
+    margin-top: 4px;
+    transition: color 0.3s;
+}
+
+.agentic-phases::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #e8eaed;
+    z-index: 0;
+}
+
+/* Active phases */
+.agentic-phase.active .agentic-phase-icon {
+    background-color: #4285F4;
+    color: white;
+}
+
+.agentic-phase.active .agentic-phase-title {
+    color: #4285F4;
+}
+
+.agentic-phase.completed .agentic-phase-icon {
+    background-color: #0F9D58;
+    color: white;
+}
+
+.agentic-phase.completed .agentic-phase-title {
+    color: #0F9D58;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .agentic-phases {
+        flex-direction: column;
+    }
+    
+    .agentic-phase {
+        margin-bottom: 16px;
+    }
+    
+    .agentic-phases::before {
+        display: none;
+    }
+}

@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoyagerVerse - Agentic AI Travel Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/agentic_visualization.css">
+    <link rel="stylesheet" href="/static/css/tool_calling_visualization.css">
+    <style>
+        :root {
+            --primary-color: #4285F4;
+            --secondary-color: #0F9D58;
+            --accent-color: #F4B400;
+            --warning-color: #DB4437;
+            --background-color: #f8f9fa;
+            --card-color: #ffffff;
+            --text-primary: #202124;
+            --text-secondary: #5f6368;
+            --border-color: #dadce0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 20px;
+        }
+        
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+        
+        nav ul li a:hover {
+            opacity: 0.8;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, var(--primary-color), #5c9ce6);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #0b8043;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid white;
+        }
+        
+        .btn-outline:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        main {
+            padding: 40px 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .section-title h2 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .section-title p {
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background-color: var(--card-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 500px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chat-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .chat-header h3 {
+            margin: 0;
+            color: white;
+        }
+        
+        .chat-messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: var(--card-color);
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+        }
+        
+        .message.user {
+            justify-content: flex-end;
+        }
+        
+        .message-content {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 18px;
+            font-size: 14px;
+        }
+        
+        .message.ai .message-content {
+            background-color: #f1f3f4;
+            color: var(--text-primary);
+            border-top-left-radius: 4px;
+        }
+        
+        .message.user .message-content {
+            background-color: var(--primary-color);
+            color: white;
+            border-top-right-radius: 4px;
+        }
+        
+        .chat-input {
+            display: flex;
+            padding: 10px;
+            background-color: #f1f3f4;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .chat-input input {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 20px;
+            background-color: white;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        .chat-input button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-left: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+        
+        .chat-input button:hover {
+            background-color: #3367d6;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+        
+        .feature-card {
+            text-align: center;
+            padding: 30px 20px;
+        }
+        
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        
+        .demo-section {
+            background-color: #f1f3f4;
+            padding: 60px 0;
+            margin-top: 40px;
+        }
+        
+        .demo-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        .demo-content h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        
+        .demo-content ul {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .demo-content li {
+            margin-bottom: 10px;
+        }
+        
+        .demo-image img {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        footer {
+            background-color: #202124;
+            color: white;
+            padding: 40px 0;
+            margin-top: 40px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+        }
+        
+        .footer-column h3 {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-column ul li a {
+            color: #dadce0;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-column ul li a:hover {
+            color: white;
+        }
+        
+        .copyright {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #5f6368;
+            color: #dadce0;
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+            }
+            
+            nav ul {
+                margin-top: 15px;
+            }
+            
+            .demo-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .demo-image {
+                order: -1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <span>VoyagerVerse</span>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#demo">Demo</a></li>
+                    <li><a href="#about">About</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <section class="hero">
+        <div class="container">
+            <h1>VoyagerVerse: Agentic AI Travel Assistant</h1>
+            <p>Experience the future of travel planning with our agentic AI assistant that adapts to real-time conditions and learns your preferences.</p>
+            <a href="#demo" class="btn">Try Demo</a>
+            <a href="#features" class="btn btn-outline">Learn More</a>
+        </div>
+    </section>
+    
+    <main class="container">
+        <section id="features">
+            <div class="section-title">
+                <h2>True Agentic AI Capabilities</h2>
+                <p>VoyagerVerse goes beyond simple AI assistants by implementing true agentic capabilities that perceive, reason, act, and learn.</p>
+            </div>
+            
+            <!-- Tool-Calling Agentic AI Visualization -->
+            <div class="tool-calling-container">
+                <div class="tool-calling-header">
+                    <h3>Tom & Priya Scenario: Tool-Calling Agentic AI in Action</h3>
+                </div>
+                
+                <!-- Agentic Phases Visualization -->
+                <div class="agentic-phases">
+                    <div class="agentic-phase" id="perception-phase">
+                        <div class="agentic-phase-icon">👁️</div>
+                        <div class="agentic-phase-title">Perception</div>
+                        <div class="agentic-phase-description">Gathering real-time data</div>
+                    </div>
+                    <div class="agentic-phase" id="reasoning-phase">
+                        <div class="agentic-phase-icon">🧠</div>
+                        <div class="agentic-phase-title">Reasoning</div>
+                        <div class="agentic-phase-description">Analyzing and planning</div>
+                    </div>
+                    <div class="agentic-phase" id="action-phase">
+                        <div class="agentic-phase-icon">⚡</div>
+                        <div class="agentic-phase-title">Action</div>
+                        <div class="agentic-phase-description">Taking autonomous actions</div>
+                    </div>
+                    <div class="agentic-phase" id="learning-phase">
+                        <div class="agentic-phase-icon">📊</div>
+                        <div class="agentic-phase-title">Learning</div>
+                        <div class="agentic-phase-description">Updating preferences</div>
+                    </div>
+                </div>
+                
+                <!-- Tool Calls Container -->
+                <div class="tool-calls-container" id="tool-calls-container"></div>
+                
+                <!-- Controls -->
+                <div class="tool-calling-controls">
+                    <button id="run-tool-calling-demo">Run Tool-Calling Demo</button>
+                </div>
+            </div>
+            
+            <div class="features">
+                <div class="card feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Perception</h3>
+                    <p>Constantly monitors real-time data including weather conditions, local events, and your personal state to stay aware of your environment.</p>
+                </div>
+                
+                <div class="card feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <h3>Reasoning</h3>
+                    <p>Analyzes multiple factors to make intelligent decisions about your itinerary, considering your preferences, weather conditions, and more.</p>
+                </div>
+                
+                <div class="card feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Action</h3>
+                    <p>Proactively makes changes to your travel plans when necessary, booking alternatives and sending you timely notifications.</p>
+                </div>
+                
+                <div class="card feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Learning</h3>
+                    <p>Continuously learns from your feedback and choices to better personalize future recommendations and decisions.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="demo" class="demo-section">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Experience Agentic AI in Action</h2>
+                    <p>See how VoyagerVerse adapts to changing conditions in real-time with our interactive demo.</p>
+                </div>
+                
+                <div class="card">
+                    <h3>Tom & Priya's Dubai Adventure</h3>
+                    <p>Watch as our agentic AI assistant helps Tom & Priya adapt their desert safari plans when extreme heat is detected.</p>
+                    
+                    <div id="agentic-visualization">
+                        <!-- Visualization components will be inserted here by JavaScript -->
+                    </div>
+                    
+                    <div class="demo-controls" style="margin-top: 20px; text-align: center;">
+                        <button id="run-demo" class="btn">Run Tom & Priya Scenario</button>
+                        <button id="reset-demo" class="btn btn-outline" style="margin-left: 10px;">Reset Demo</button>
+                    </div>
+                </div>
+                
+                <div class="card" style="margin-top: 30px;">
+                    <h3>Chat with VoyagerVerse</h3>
+                    <div class="chat-container">
+                        <div class="chat-header">
+                            <h3>VoyagerVerse Assistant</h3>
+                        </div>
+                        <div class="chat-messages" id="chat-messages">
+                            <div class="message ai">
+                                <div class="message-content">
+                                    Hello! I'm your VoyagerVerse agentic AI travel assistant. How can I help with your Dubai trip today?
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat-input">
+                            <input type="text" id="user-input" placeholder="Type your message...">
+                            <button id="send-button">u27a4</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="about" style="margin-top: 40px;">
+            <div class="section-title">
+                <h2>About VoyagerVerse</h2>
+                <p>Learn more about our agentic AI travel assistant and how it can transform your travel experience.</p>
+            </div>
+            
+            <div class="demo-container">
+                <div class="demo-content">
+                    <h2>Why VoyagerVerse?</h2>
+                    <p>VoyagerVerse represents the next generation of travel assistance, going beyond simple recommendations to provide truly agentic capabilities:</p>
+                    <ul>
+                        <li><strong>Real-time Adaptation:</strong> Automatically adjusts your itinerary based on changing conditions.</li>
+                        <li><strong>Personalized Experience:</strong> Learns your preferences over time for better recommendations.</li>
+                        <li><strong>Proactive Problem-Solving:</strong> Identifies potential issues before they affect your trip.</li>
+                        <li><strong>Seamless Integration:</strong> Connects with real-world services and APIs for booking and information.</li>
+                    </ul>
+                    <a href="#" class="btn">Learn More</a>
+                </div>
+                <div class="demo-image">
+                    <img src="https://source.unsplash.com/random/600x400/?dubai,travel" alt="Dubai Travel">
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>VoyagerVerse</h3>
+                    <p>The future of travel planning with agentic AI technology.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Features</h3>
+                    <ul>
+                        <li><a href="#">Perception</a></li>
+                        <li><a href="#">Reasoning</a></li>
+                        <li><a href="#">Action</a></li>
+                        <li><a href="#">Learning</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">API Reference</a></li>
+                        <li><a href="#">Tutorials</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact</h3>
+                    <ul>
+                        <li><a href="#">Support</a></li>
+                        <li><a href="#">Feedback</a></li>
+                        <li><a href="#">Partnerships</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 VoyagerVerse. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="/static/js/agentic_visualization.js"></script>
+    <script src="/static/js/tool_calling_visualization.js"></script>
+    <script>
+        // Demo functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const runDemoButton = document.getElementById('run-demo');
+            const resetDemoButton = document.getElementById('reset-demo');
+            const chatMessages = document.getElementById('chat-messages');
+            const userInput = document.getElementById('user-input');
+            const sendButton = document.getElementById('send-button');
+            
+            // Run the Tom & Priya scenario
+            runDemoButton.addEventListener('click', async function() {
+                runDemoButton.disabled = true;
+                runDemoButton.textContent = 'Running Demo...';
+                
+                try {
+                    const response = await fetch('/demo/tom-priya-scenario');
+                    const data = await response.json();
+                    
+                    // Update the visualization with the scenario data
+                    if (window.agenticVisualizer) {
+                        window.agenticVisualizer.updateVisualizations(data);
+                    }
+                    
+                    // Add a message to the chat
+                    const message = document.createElement('div');
+                    message.className = 'message ai';
+                    message.innerHTML = `
+                        <div class="message-content">
+                            <strong>VoyagerVerse Alert:</strong> I've detected extreme heat (${data.context?.weather?.temperature}°C) for your desert safari today. I've rescheduled it to early morning when temperatures are cooler and added an indoor cultural activity during the hottest part of the day.
+                        </div>
+                    `;
+                    chatMessages.appendChild(message);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    
+                    runDemoButton.textContent = 'Demo Complete';
+                } catch (error) {
+                    console.error('Error running demo:', error);
+                    runDemoButton.textContent = 'Error Running Demo';
+                }
+            });
+            
+            // Reset the demo
+            resetDemoButton.addEventListener('click', function() {
+                runDemoButton.disabled = false;
+                runDemoButton.textContent = 'Run Tom & Priya Scenario';
+                
+                // Clear the chat messages except the first one
+                while (chatMessages.children.length > 1) {
+                    chatMessages.removeChild(chatMessages.lastChild);
+                }
+            });
+            
+            // Send a message
+            function sendMessage() {
+                const text = userInput.value.trim();
+                if (text === '') return;
+                
+                // Add user message
+                const userMessage = document.createElement('div');
+                userMessage.className = 'message user';
+                userMessage.innerHTML = `<div class="message-content">${text}</div>`;
+                chatMessages.appendChild(userMessage);
+                
+                // Clear input
+                userInput.value = '';
+                
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                // Simulate AI response
+                setTimeout(function() {
+                    const aiMessage = document.createElement('div');
+                    aiMessage.className = 'message ai';
+                    
+                    // Simple response logic
+                    let response = '';
+                    if (text.toLowerCase().includes('weather')) {
+                        response = 'The current weather in Dubai is 45°C and sunny. I recommend indoor activities during the afternoon to avoid the extreme heat.';
+                    } else if (text.toLowerCase().includes('restaurant') || text.toLowerCase().includes('food') || text.toLowerCase().includes('eat')) {
+                        response = 'Based on your preferences for Indian and Mediterranean cuisine, I recommend trying Al Muntaha at Burj Al Arab or Pierchic at Jumeirah Al Qasr.';
+                    } else if (text.toLowerCase().includes('activity') || text.toLowerCase().includes('do')) {
+                        response = 'For today, I recommend visiting the Dubai Museum in the morning, followed by lunch at Arabian Tea House, and shopping at Dubai Mall in the evening when it's cooler.';
+                    } else {
+                        response = 'I'm here to help with your Dubai trip. You can ask me about weather, activities, restaurants, or transportation options.';
+                    }
+                    
+                    aiMessage.innerHTML = `<div class="message-content">${response}</div>`;
+                    chatMessages.appendChild(aiMessage);
+                    
+                    // Scroll to bottom
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 1000);
+            }
+            
+            // Send message on button click
+            sendButton.addEventListener('click', sendMessage);
+            
+            // Send message on Enter key
+            userInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
